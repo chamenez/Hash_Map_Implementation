@@ -107,16 +107,26 @@ class HashMap:
 
     def resize_table(self, new_capacity: int) -> None:
         if new_capacity >= 1:
-            resized = HashMap(new_capacity, self.hash_function)
-            for index in range(self.buckets.length()):
-                resized.buckets[index] = self.buckets[index]
-            self.buckets = resized.buckets
+            old = self.buckets
+            new = HashMap(new_capacity, self.hash_function)
+            for index in range(old.length()):
+                head = old[index].head
+                while head != None:
+                    key = head.key
+                    value = head.value
+                    new.put(key, value)
+                    head = head.next
+            self.buckets = new.buckets
             self.capacity = new_capacity
         else:
             return
 
     def get_keys(self) -> DynamicArray:
-        pass
+        keyArray = DynamicArray
+        for index in range(self.buckets.length()):
+            if self.buckets[index].head:
+                print(self.buckets[index].head)
+                keyArray.append(self.buckets, self.buckets[index].head.key)
 
 
 # BASIC TESTING
@@ -259,33 +269,33 @@ if __name__ == "__main__":
     # print(m.get('key1'))
     # m.remove('key4')
     #
-    print("\nPDF - resize example 1")
-    print("----------------------")
-    m = HashMap(20, hash_function_1)
-    m.put('key1', 10)
-    print(m.size, m.capacity, m.get('key1'), m.contains_key('key1'))
-    m.resize_table(30)
-    print(m.size, m.capacity, m.get('key1'), m.contains_key('key1'))
-
-    print("\nPDF - resize example 2")
-    print("----------------------")
-    m = HashMap(75, hash_function_2)
-    keys = [i for i in range(1, 1000, 13)]
-    for key in keys:
-        m.put(str(key), key * 42)
-    print(m.size, m.capacity)
-
-    for capacity in range(111, 1000, 117):
-        m.resize_table(capacity)
-
-        m.put('some key', 'some value')
-        result = m.contains_key('some key')
-        m.remove('some key')
-
-        for key in keys:
-            result &= m.contains_key(str(key))
-            result &= not m.contains_key(str(key + 1))
-        print(capacity, result, m.size, m.capacity, round(m.table_load(), 2))
+    # print("\nPDF - resize example 1")
+    # print("----------------------")
+    # m = HashMap(20, hash_function_1)
+    # m.put('key1', 10)
+    # print(m.size, m.capacity, m.get('key1'), m.contains_key('key1'))
+    # m.resize_table(30)
+    # print(m.size, m.capacity, m.get('key1'), m.contains_key('key1'))
+    #
+    # print("\nPDF - resize example 2")
+    # print("----------------------")
+    # m = HashMap(75, hash_function_2)
+    # keys = [i for i in range(1, 1000, 13)]
+    # for key in keys:
+    #     m.put(str(key), key * 42)
+    # print(m.size, m.capacity)
+    #
+    # for capacity in range(111, 1000, 117):
+    #     m.resize_table(capacity)
+    #
+    #     m.put('some key', 'some value')
+    #     result = m.contains_key('some key')
+    #     m.remove('some key')
+    #
+    #     for key in keys:
+    #         result &= m.contains_key(str(key))
+    #         result &= not m.contains_key(str(key + 1))
+    #     print(capacity, result, m.size, m.capacity, round(m.table_load(), 2))
 
     print("\nPDF - get_keys example 1")
     print("------------------------")
