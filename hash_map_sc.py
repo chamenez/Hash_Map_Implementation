@@ -110,12 +110,12 @@ class HashMap:
             old = self.buckets
             new = HashMap(new_capacity, self.hash_function)
             for index in range(old.length()):
-                head = old[index].head
-                while head != None:
-                    key = head.key
-                    value = head.value
+                current = old[index].head
+                while current != None:
+                    key = current.key
+                    value = current.value
                     new.put(key, value)
-                    head = head.next
+                    current = current.next
             self.buckets = new.buckets
             self.capacity = new_capacity
         else:
@@ -125,8 +125,10 @@ class HashMap:
         keyArray = DynamicArray
         for index in range(self.buckets.length()):
             if self.buckets[index].head:
-                print(self.buckets[index].head)
-                keyArray.append(self.buckets, self.buckets[index].head.key)
+                current = self.buckets[index].head
+                while current != None:
+                    keyArray.append(self.buckets, self.buckets[index].head.key)
+                    current = current.next
 
 
 # BASIC TESTING
