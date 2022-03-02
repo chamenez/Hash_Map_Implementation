@@ -122,14 +122,11 @@ class HashMap:
             return
 
     def get_keys(self) -> DynamicArray:
-        keyArray = DynamicArray
+        keyArray = DynamicArray()
         for index in range(self.buckets.length()):
-            if self.buckets[index].head:
-                current = self.buckets[index].head
-                while current != None:
-                    keyArray.append(self.buckets, self.buckets[index].head.key)
-                    current = current.next
-
+            for node in self.buckets[index]:
+                keyArray.append(node.key)
+        return keyArray
 
 # BASIC TESTING
 if __name__ == "__main__":
