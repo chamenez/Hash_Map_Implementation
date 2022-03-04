@@ -83,42 +83,43 @@ class HashMap:
                 self.size -= 1
 
     def get(self, key: str) -> object:
-        data = self.hash_function(key) % self.capacity
-        x = self.buckets.get_at_index(data)
-        if self.buckets[data] != None:
-            return x.value
+        # index = self.hash_function(key) % self.capacity
+        # initial = index
+        # j = 0
+        # print(index)
+        # while self.buckets[index].key != key:
+        #     j += 1
+        #     index = (initial + (j ** 2)) % self.capacity
+        #     print(index, "key")
+        pass
 
     def put(self, key: str, value: object) -> None:
-        index = self.hash_function(key) % self.capacity
-        element = HashEntry(key, value)
         if self.table_load() >= 0.5:
             self.resize_table(self.capacity * 2)
+        index = self.hash_function(key) % self.capacity
+        element = HashEntry(key, value)
         if self.buckets[index] == None:
             self.buckets[index] = element
             self.size += 1
-        elif self.buckets[index].key == key:
-            self.buckets[index].value = value
-        elif self.buckets[index].key != key:
-            initial = index
-            j = 0
-            while self.buckets[index] != None:
-                j += 1
-                index = (initial + (j ** 2)) % self.capacity
-            self.buckets[index] = element
-            self.size += 1
+        else:
+            if self.buckets[index].key == key:
+                self.buckets[index].value = value
+            else:
+                initial = index
+                j = 0
+                while self.buckets[index] != None:
+                    j += 1
+                    index = (initial + (j ** 2)) % self.capacity
+                    if self.buckets[index] != None and self.buckets[index].key == key:
+                        self.buckets[index].value = value
+                        break
+                if self.buckets[index] == None:
+                    self.buckets[index] = element
+                    self.size += 1
 
-        # remember, if the load factor is greater than 0.5,
-        # resize the table before putting the new key/value pair
-        #
-        # quadratic probing required
-        pass
 
     def remove(self, key: str) -> None:
-        """
-        TODO: Write this implementation
-        """
-        # quadratic probing required
-        pass
+        index = self.hash_function(key) % self.capacity
 
     def contains_key(self, key: str) -> bool:
         """
@@ -138,19 +139,21 @@ class HashMap:
             return
         else:
             old = self.buckets
-            new = HashMap(new_capacity, self.hash_function).buckets
-            for index in range(old.length()):
-                new[index] = old[index]
+            self.buckets = DynamicArray()
+            self.size = 0
+            for index in range(new_capacity):
+                self.buckets.append(None)
             self.capacity = new_capacity
-            self.buckets = new
-        # remember to rehash non-deleted entries into new table
+            for index in range(old.length()):
+                if old[index] != None:
+                    self.put(old[index].key, old[index].value)
 
     def get_keys(self) -> DynamicArray:
-        """
-        TODO: Write this implementation
-        """
-        pass
-
+        keyArray = DynamicArray()
+        for index in range(self.buckets.length()):
+            if self.buckets[index] != None:
+                keyArray.append(self.buckets[index].key)
+        return keyArray
 
 if __name__ == "__main__":
 
@@ -219,21 +222,21 @@ if __name__ == "__main__":
     # m.clear()
     # print(m.size, m.capacity)
 
-    print("\nPDF - put example 1")
-    print("-------------------")
-    m = HashMap(50, hash_function_1)
-    for i in range(150):
-        m.put('str' + str(i), i * 100)
-        if i % 25 == 24:
-            print(m.empty_buckets(), m.table_load(), m.size, m.capacity)
-
-    print("\nPDF - put example 2")
-    print("-------------------")
-    m = HashMap(40, hash_function_2)
-    for i in range(50):
-        m.put('str' + str(i // 3), i * 100)
-        if i % 10 == 9:
-            print(m.empty_buckets(), m.table_load(), m.size, m.capacity)
+    # print("\nPDF - put example 1")
+    # print("-------------------")
+    # m = HashMap(50, hash_function_1)
+    # for i in range(150):
+    #     m.put('str' + str(i), i * 100)
+    #     if i % 25 == 24:
+    #         print(m.empty_buckets(), m.table_load(), m.size, m.capacity)
+    #
+    # print("\nPDF - put example 2")
+    # print("-------------------")
+    # m = HashMap(40, hash_function_2)
+    # for i in range(50):
+    #     m.put('str' + str(i // 3), i * 100)
+    #     if i % 10 == 9:
+    #         print(m.empty_buckets(), m.table_load(), m.size, m.capacity)
 
     # print("\nPDF - contains_key example 1")
     # print("----------------------------")
@@ -281,15 +284,15 @@ if __name__ == "__main__":
     #     print(i, m.get(str(i)), m.get(str(i)) == i * 10)
     #     print(i + 1, m.get(str(i + 1)), m.get(str(i + 1)) == (i + 1) * 10)
     #
-    # print("\nPDF - remove example 1")
-    # print("----------------------")
-    # m = HashMap(50, hash_function_1)
-    # print(m.get('key1'))
-    # m.put('key1', 10)
-    # print(m.get('key1'))
-    # m.remove('key1')
-    # print(m.get('key1'))
-    # m.remove('key4')
+    print("\nPDF - remove example 1")
+    print("----------------------")
+    m = HashMap(50, hash_function_1)
+    print(m.get('key1'))
+    m.put('key1', 10)
+    print(m.get('key1'))
+    m.remove('key1')
+    print(m.get('key1'))
+    m.remove('key4')
     #
     # print("\nPDF - resize example 1")
     # print("----------------------")
@@ -298,7 +301,7 @@ if __name__ == "__main__":
     # print(m.size, m.capacity, m.get('key1'), m.contains_key('key1'))
     # m.resize_table(30)
     # print(m.size, m.capacity, m.get('key1'), m.contains_key('key1'))
-    #
+    # #
     # print("\nPDF - resize example 2")
     # print("----------------------")
     # m = HashMap(75, hash_function_2)
@@ -306,7 +309,7 @@ if __name__ == "__main__":
     # for key in keys:
     #     m.put(str(key), key * 42)
     # print(m.size, m.capacity)
-
+    #
     # for capacity in range(111, 1000, 117):
     #     m.resize_table(capacity)
     #
