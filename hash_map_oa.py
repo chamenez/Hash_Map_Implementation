@@ -8,7 +8,6 @@
 
 from a6_include import *
 
-
 class HashEntry:
 
     def __init__(self, key: str, value: object):
@@ -51,6 +50,7 @@ def hash_function_2(key: str) -> int:
     return hash
 
 class HashMap:
+
     def __init__(self, capacity: int, function) -> None:
         """
         Initialize new HashMap that uses Quadratic Probing for collision resolution
@@ -87,7 +87,7 @@ class HashMap:
         if self.buckets[index] == None:
             return
         else:
-            if self.buckets[index].key == key:
+            if self.buckets[index].key == key and self.buckets[index].is_tombstone != True:
                 return self.buckets[index].value
             else:
                 initial = index
@@ -97,6 +97,7 @@ class HashMap:
                     index = (initial + (j ** 2)) % self.capacity
                     if self.buckets[index] != None and self.buckets[index].key == key:
                         return self.buckets[index].value
+                return
 
     def put(self, key: str, value: object) -> None:
         if self.table_load() >= 0.5:
@@ -126,11 +127,10 @@ class HashMap:
         index = self.hash_function(key) % self.capacity
         if self.buckets[index] == None:
             return
-        elif self.buckets[index].is_tombstone == True:
-            return
         else:
             if self.buckets[index].key == key:
                 self.buckets[index].is_tombstone = True
+                self.size -= 1
                 return
             else:
                 initial = index
@@ -138,12 +138,12 @@ class HashMap:
                 while self.buckets[index].key != key:
                     j += 1
                     index = (initial + (j ** 2)) % self.capacity
-                    if self.buckets[index] != None and self.buckets[index].key == key:
+                    if self.buckets[index] == None:
+                        return
+                    if self.buckets[index].key == key:
                         self.buckets[index].is_tombstone = True
+                        self.size -= 1
                         return
-                    elif self.buckets[index].is_tombstone == True:
-                        return
-
 
     def contains_key(self, key: str) -> bool:
         index = self.hash_function(key) % self.capacity
@@ -185,7 +185,7 @@ class HashMap:
     def get_keys(self) -> DynamicArray:
         keyArray = DynamicArray()
         for index in range(self.buckets.length()):
-            if self.buckets[index] != None:
+            if self.buckets[index] != None and self.buckets[index].is_tombstone == False:
                 keyArray.append(self.buckets[index].key)
         return keyArray
 
@@ -307,7 +307,7 @@ if __name__ == "__main__":
     # print(m.get('key'))
     # m.put('key1', 10)
     # print(m.get('key1'))
-    # #
+    #
     # print("\nPDF - get example 2")
     # print("-------------------")
     # m = HashMap(150, hash_function_2)
@@ -317,6 +317,7 @@ if __name__ == "__main__":
     # for i in range(200, 300, 21):
     #     print(i, m.get(str(i)), m.get(str(i)) == i * 10)
     #     print(i + 1, m.get(str(i + 1)), m.get(str(i + 1)) == (i + 1) * 10)
+    #
     #
     print("\nPDF - remove example 1")
     print("----------------------")
@@ -328,13 +329,13 @@ if __name__ == "__main__":
     print(m.get('key1'))
     m.remove('key4')
     #
-    # print("\nPDF - resize example 1")
-    # print("----------------------")
-    # m = HashMap(20, hash_function_1)
-    # m.put('key1', 10)
-    # print(m.size, m.capacity, m.get('key1'), m.contains_key('key1'))
-    # m.resize_table(30)
-    # print(m.size, m.capacity, m.get('key1'), m.contains_key('key1'))
+    print("\nPDF - resize example 1")
+    print("----------------------")
+    m = HashMap(20, hash_function_1)
+    m.put('key1', 10)
+    print(m.size, m.capacity, m.get('key1'), m.contains_key('key1'))
+    m.resize_table(30)
+    print(m.size, m.capacity, m.get('key1'), m.contains_key('key1'))
     #
     # print("\nPDF - resize example 2")
     # print("----------------------")
