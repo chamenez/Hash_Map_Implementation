@@ -1,8 +1,8 @@
-# Name:
-# OSU Email:
+# Name: Dominic Chavez
+# OSU Email: chavezdo@oregonstate.edu
 # Course: CS261 - Data Structures
-# Assignment:
-# Due Date:
+# Assignment: 6
+# Due Date: March 11, 2022
 # Description:
 
 
@@ -83,15 +83,20 @@ class HashMap:
                 self.size -= 1
 
     def get(self, key: str) -> object:
-        # index = self.hash_function(key) % self.capacity
-        # initial = index
-        # j = 0
-        # print(index)
-        # while self.buckets[index].key != key:
-        #     j += 1
-        #     index = (initial + (j ** 2)) % self.capacity
-        #     print(index, "key")
-        pass
+        index = self.hash_function(key) % self.capacity
+        if self.buckets[index] == None:
+            return
+        else:
+            if self.buckets[index].key == key:
+                return self.buckets[index].value
+            else:
+                initial = index
+                j = 0
+                while self.buckets[index] != None:
+                    j += 1
+                    index = (initial + (j ** 2)) % self.capacity
+                    if self.buckets[index] != None and self.buckets[index].key == key:
+                        return self.buckets[index].value
 
     def put(self, key: str, value: object) -> None:
         if self.table_load() >= 0.5:
@@ -117,16 +122,45 @@ class HashMap:
                     self.buckets[index] = element
                     self.size += 1
 
-
     def remove(self, key: str) -> None:
         index = self.hash_function(key) % self.capacity
+        if self.buckets[index] == None:
+            return
+        elif self.buckets[index].is_tombstone == True:
+            return
+        else:
+            if self.buckets[index].key == key:
+                self.buckets[index].is_tombstone = True
+                return
+            else:
+                initial = index
+                j = 0
+                while self.buckets[index].key != key:
+                    j += 1
+                    index = (initial + (j ** 2)) % self.capacity
+                    if self.buckets[index] != None and self.buckets[index].key == key:
+                        self.buckets[index].is_tombstone = True
+                        return
+                    elif self.buckets[index].is_tombstone == True:
+                        return
+
 
     def contains_key(self, key: str) -> bool:
-        """
-        TODO: Write this implementation
-        """
-        # quadratic probing required
-        pass
+        index = self.hash_function(key) % self.capacity
+        if self.buckets[index] == None:
+            return False
+        else:
+            if self.buckets[index].key == key:
+                return True
+            else:
+                initial = index
+                j = 0
+                while self.buckets[index] != None:
+                    j += 1
+                    index = (initial + (j ** 2)) % self.capacity
+                    if self.buckets[index] != None and self.buckets[index].key == key:
+                        return True
+                return False
 
     def empty_buckets(self) -> int:
         return self.capacity - self.size
@@ -208,7 +242,7 @@ if __name__ == "__main__":
     # print(m.size, m.capacity)
     # m.clear()
     # print(m.size, m.capacity)
-
+    #
     # print("\nPDF - clear example 2")
     # print("---------------------")
     # m = HashMap(50, hash_function_1)
@@ -221,7 +255,7 @@ if __name__ == "__main__":
     # print(m.size, m.capacity)
     # m.clear()
     # print(m.size, m.capacity)
-
+    #
     # print("\nPDF - put example 1")
     # print("-------------------")
     # m = HashMap(50, hash_function_1)
@@ -237,7 +271,7 @@ if __name__ == "__main__":
     #     m.put('str' + str(i // 3), i * 100)
     #     if i % 10 == 9:
     #         print(m.empty_buckets(), m.table_load(), m.size, m.capacity)
-
+    #
     # print("\nPDF - contains_key example 1")
     # print("----------------------------")
     # m = HashMap(10, hash_function_1)
@@ -251,7 +285,7 @@ if __name__ == "__main__":
     # print(m.contains_key('key3'))
     # m.remove('key3')
     # print(m.contains_key('key3'))
-    #
+
     # print("\nPDF - contains_key example 2")
     # print("----------------------------")
     # m = HashMap(75, hash_function_2)
@@ -273,7 +307,7 @@ if __name__ == "__main__":
     # print(m.get('key'))
     # m.put('key1', 10)
     # print(m.get('key1'))
-    #
+    # #
     # print("\nPDF - get example 2")
     # print("-------------------")
     # m = HashMap(150, hash_function_2)
@@ -301,7 +335,7 @@ if __name__ == "__main__":
     # print(m.size, m.capacity, m.get('key1'), m.contains_key('key1'))
     # m.resize_table(30)
     # print(m.size, m.capacity, m.get('key1'), m.contains_key('key1'))
-    # #
+    #
     # print("\nPDF - resize example 2")
     # print("----------------------")
     # m = HashMap(75, hash_function_2)
