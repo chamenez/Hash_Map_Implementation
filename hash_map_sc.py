@@ -1,9 +1,9 @@
-# Name:
-# OSU Email:
+# Name: Dominic Chavez
+# OSU Email: chavezdo@oregonstate.edu
 # Course: CS261 - Data Structures
-# Assignment:
-# Due Date:
-# Description:
+# Assignment: 6
+# Due Date: March 11, 2022
+# Description: This code implements a hash map function via linked-list.
 
 
 from a6_include import *
@@ -56,11 +56,15 @@ class HashMap:
         return out
 
     def clear(self) -> None:
+        """Clears buckets."""
+
         for index in range(self.capacity):
             self.buckets[index] = LinkedList()
         self.size = 0
 
     def get(self, key: str) -> object:
+        """Returns value at hashed index."""
+
         listIndex = self.hash_function(key) % self.capacity
         list = self.buckets[listIndex]
         if list.contains(key):
@@ -68,6 +72,8 @@ class HashMap:
             return node.value
 
     def put(self, key: str, value: object) -> None:
+        """Places key and value at hashed index."""
+
         listIndex = self.hash_function(key) % self.capacity
         list = self.buckets[listIndex]
         if list.head == None:
@@ -81,6 +87,8 @@ class HashMap:
             self.size += 1
 
     def remove(self, key: str) -> None:
+        """Removes key and value at hashed index."""
+
         listIndex = self.hash_function(key) % self.capacity
         list = self.buckets[listIndex]
         if list.contains(key):
@@ -88,6 +96,8 @@ class HashMap:
             self.size -= 1
 
     def contains_key(self, key: str) -> bool:
+        """Returns boolean value for if a key is in buckets."""
+
         listIndex = self.hash_function(key) % self.capacity
         list = self.buckets[listIndex]
         if list.contains(key):
@@ -96,6 +106,8 @@ class HashMap:
             return False
 
     def empty_buckets(self) -> int:
+        """Returns amount of empty buckets."""
+
         count = 0
         for index in range(self.buckets.length()):
             if self.buckets[index].head == None:
@@ -103,9 +115,13 @@ class HashMap:
         return count
 
     def table_load(self) -> float:
+        """Returns load factor."""
+
         return self.size / self.capacity
 
     def resize_table(self, new_capacity: int) -> None:
+        """Resizes hash_map."""
+
         if new_capacity >= 1:
             old = self.buckets
             new = HashMap(new_capacity, self.hash_function)
@@ -122,6 +138,8 @@ class HashMap:
             return
 
     def get_keys(self) -> DynamicArray:
+        """Returns hash map keys."""
+
         keyArray = DynamicArray()
         for index in range(self.buckets.length()):
             for node in self.buckets[index]:

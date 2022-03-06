@@ -3,7 +3,7 @@
 # Course: CS261 - Data Structures
 # Assignment: 6
 # Due Date: March 11, 2022
-# Description:
+# Description: This code implements a hash map function via dynamic array.
 
 
 from a6_include import *
@@ -77,12 +77,16 @@ class HashMap:
         return out
 
     def clear(self) -> None:
+        """Clears buckets."""
+
         for index in range(self.buckets.length()):
             if self.buckets[index] != None:
                 self.buckets[index] = None
                 self.size -= 1
 
     def get(self, key: str) -> object:
+        """Returns value at hashed index."""
+
         index = self.hash_function(key) % self.capacity
         if self.buckets[index] == None:
             return
@@ -100,6 +104,8 @@ class HashMap:
                 return
 
     def put(self, key: str, value: object) -> None:
+        """Places key and value at hashed index."""
+
         if self.table_load() >= 0.5:
             self.resize_table(self.capacity * 2)
         index = self.hash_function(key) % self.capacity
@@ -124,11 +130,15 @@ class HashMap:
                     self.size += 1
 
     def remove(self, key: str) -> None:
+        """Removes key and value at hashed index."""
+
         index = self.hash_function(key) % self.capacity
         if self.buckets[index] == None:
             return
+        elif self.buckets[index].key == key and self.buckets[index].is_tombstone == True:
+            return
         else:
-            if self.buckets[index].key == key:
+            if self.buckets[index].key == key and self.buckets[index].is_tombstone != True:
                 self.buckets[index].is_tombstone = True
                 self.size -= 1
                 return
@@ -140,12 +150,16 @@ class HashMap:
                     index = (initial + (j ** 2)) % self.capacity
                     if self.buckets[index] == None:
                         return
-                    if self.buckets[index].key == key:
+                    elif self.buckets[index].key == key and self.buckets[index].is_tombstone == True:
+                        return
+                    elif self.buckets[index].key == key and self.buckets[index].is_tombstone != True:
                         self.buckets[index].is_tombstone = True
                         self.size -= 1
                         return
 
     def contains_key(self, key: str) -> bool:
+        """Returns boolean value for if a key is in buckets."""
+
         index = self.hash_function(key) % self.capacity
         if self.buckets[index] == None:
             return False
@@ -163,12 +177,18 @@ class HashMap:
                 return False
 
     def empty_buckets(self) -> int:
+        """Returns amount of empty buckets."""
+
         return self.capacity - self.size
 
     def table_load(self) -> float:
+        """Returns load factor."""
+
         return self.size / self.capacity
 
     def resize_table(self, new_capacity: int) -> None:
+        """Resizes hash map."""
+
         if new_capacity < 1 or new_capacity < self.size:
             return
         else:
@@ -179,10 +199,12 @@ class HashMap:
                 self.buckets.append(None)
             self.capacity = new_capacity
             for index in range(old.length()):
-                if old[index] != None:
+                if old[index] != None and old[index].is_tombstone != True:
                     self.put(old[index].key, old[index].value)
 
     def get_keys(self) -> DynamicArray:
+        """Returns hash map keys."""
+
         keyArray = DynamicArray()
         for index in range(self.buckets.length()):
             if self.buckets[index] != None and self.buckets[index].is_tombstone == False:
